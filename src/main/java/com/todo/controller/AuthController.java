@@ -25,6 +25,15 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
+
+    /**
+     * Health check endpoint
+     * GET /api/auth/health
+     */
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> health() {
+        return ResponseEntity.ok(Map.of("status", "UP", "message", "Backend is running and accessible"));
+    }
     
     /**
      * Register a new user
