@@ -1,4 +1,6 @@
 package com.todo.service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.todo.dto.LoginRequest;
 import com.todo.dto.RegisterRequest;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
     
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -32,20 +35,31 @@ public class AuthService {
      * Register a new user
      */
     public AuthResponse register(RegisterRequest request) {
+        logger.debug("Attempting to register user with email: {}", request.getEmail());
         // Check if email already exists
         if (userRepository.existsByEmail(request.getEmail())) {
+            logger.warn("Registration failed: Email {} already exists", request.getEmail());
             throw new RuntimeException("Email already registered");
         }
         
-        // Create new user
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        
-        User savedUser = userRepository.save(user);
-        
-        return new AuthResponse(null, "Registration successful", new UserDto(savedUser));
+        try {
+            // Create new user
+            User user = new User();
+            user.setName(request.getName());
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            
+            User savedUser = userRepository.save(user);
+            logger.info("User registered successfully: {}", savedUser.getEmail());
+            
+            // Generate token for automatic login after registration
+            String token = jwtService.generateToken(savedUser.getId(), savedUser.getEmail());
+            
+            return new AuthResponse(token, "Registration successful", new UserDto(savedUser));
+        } catch (Exception e) {
+            logger.error("Error during registration for email {}: {}", request.getEmail(), e.getMessage());
+            throw new RuntimeException("Registration failed due to server error: " + e.getMessage());
+        }
     }
     
     /**

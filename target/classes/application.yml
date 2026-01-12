@@ -1,12 +1,12 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: todo-backend
   data:
     mongodb:
-      uri: mongodb+srv://todouser:Todo12345@cluster0.ibkd9yn.mongodb.net/tododb?retryWrites=true&w=majority&tododb=Cluster0
+      uri: ${MONGODB_URI:mongodb+srv://todouser:Todo12345@cluster0.ibkd9yn.mongodb.net/tododb?retryWrites=true&w=majority}
       database: tododb
 
 # JWT Configuration
