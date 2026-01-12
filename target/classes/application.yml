@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: todo-backend
+  data:
+    mongodb:
+      uri: mongodb+srv://todouser:Todo12345@cluster0.ibkd9yn.mongodb.net/tododb?retryWrites=true&w=majority&tododb=Cluster0
+      database: tododb
+
+# JWT Configuration
+jwt:
+  secret: YourSuperSecretKeyForJWTTokenGenerationMustBe256BitsOrMore2024
+  expiration: 86400000  # 24 hours in milliseconds
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.todo: DEBUG
